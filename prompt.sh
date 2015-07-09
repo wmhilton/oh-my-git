@@ -23,7 +23,7 @@ if [ -n "${BASH_VERSION}" ]; then
     : ${omg_not_tracked_branch_symbol:='�'}
     : ${omg_rebase_tracking_branch_symbol:='↯'}
     : ${omg_merge_tracking_branch_symbol:='↯'}
-    : ${omg_should_push_symbol:='☝'}
+    : ${omg_should_push_symbol:='P'}
     : ${omg_has_stashes_symbol:='☢'}
 
     : ${omg_default_color_on:='\[\033[1;37m\]'}
@@ -129,7 +129,7 @@ if [ -n "${BASH_VERSION}" ]; then
 
             # where
 
-            prompt="${prompt} ${white_on_red} ${black_on_red}"
+            prompt="${prompt} ${white_on_red} "
             if [[ $detached == true ]]; then
                 prompt+=$(enrich_append $detached $omg_detached_symbol "${white_on_red}")
                 prompt+=$(enrich_append $detached "(${current_commit_hash:0:7})" "${black_on_red}")
@@ -142,21 +142,17 @@ if [ -n "${BASH_VERSION}" ]; then
                     else
                         local type_of_upstream=$omg_merge_tracking_branch_symbol
                     fi
-
-                    if [[ $has_diverged == true ]]; then
-                        prompt+=$(enrich_append true "-${commits_behind} ${omg_has_diverged_symbol} +${commits_ahead}" "${white_on_red}")
-                    else
-                        if [[ $commits_behind -gt 0 ]]; then
-                            prompt+=$(enrich_append true "-${commits_behind} ${white_on_red}${omg_can_fast_forward_symbol}${black_on_red} --" "${black_on_red}")
-                        fi
-                        if [[ $commits_ahead -gt 0 ]]; then
-                            prompt+=$(enrich_append true "-- ${white_on_red}${omg_should_push_symbol}${black_on_red}  +${commits_ahead}" "${black_on_red}")
-                        fi
-                        if [[ $commits_ahead == 0 && $commits_behind == 0 ]]; then
-                            prompt+=$(enrich_append true " up to date" "${black_on_red}")
-                        fi
-                        
+                   
+                    if [[ $commits_behind -gt 0 ]]; then
+                        prompt+=$(enrich_append true "-${commits_behind} behind " "${black_on_red}")
                     fi
+                    if [[ $commits_ahead -gt 0 ]]; then
+                        prompt+=$(enrich_append true "+${commits_ahead} ahead" "${white_on_red}")
+                    fi
+                    if [[ $commits_ahead == 0 && $commits_behind == 0 ]]; then
+                        prompt+=$(enrich_append true " up to date" "${black_on_red}")
+                    fi
+                      
                     prompt+=$(enrich_append true "(${current_branch} ${type_of_upstream} ${upstream//\/$current_branch/})" "${black_on_red}")
                 fi
             fi
