@@ -7,24 +7,24 @@ if [ -n "${BASH_VERSION}" ]; then
     : ${omg_ungit_prompt:=$PS1}
     : ${omg_second_line:=$PS1}
 
-    : ${omg_is_a_git_repo_symbol:=''}
-    : ${omg_has_untracked_files_symbol:=''}        #                ?    
-    : ${omg_has_adds_symbol:=''}
-    : ${omg_has_deletions_symbol:=''}
-    : ${omg_has_cached_deletions_symbol:=''}
-    : ${omg_has_modifications_symbol:=''}
-    : ${omg_has_cached_modifications_symbol:=''}
-    : ${omg_ready_to_commit_symbol:=''}            #   →
-    : ${omg_is_on_a_tag_symbol:=''}                #   
-    : ${omg_needs_to_merge_symbol:='ᄉ'}
-    : ${omg_detached_symbol:=''}
-    : ${omg_can_fast_forward_symbol:=''}
-    : ${omg_has_diverged_symbol:=''}               #   
-    : ${omg_not_tracked_branch_symbol:=''}
-    : ${omg_rebase_tracking_branch_symbol:=''}     #   
-    : ${omg_merge_tracking_branch_symbol:=''}      #  
-    : ${omg_should_push_symbol:=''}                #    
-    : ${omg_has_stashes_symbol:=''}
+    : ${omg_is_a_git_repo_symbol:=''}
+    : ${omg_has_untracked_files_symbol:='?'}
+    : ${omg_has_adds_symbol:='+'}
+    : ${omg_has_deletions_symbol:='-'}
+    : ${omg_has_cached_deletions_symbol:='x'}
+    : ${omg_has_modifications_symbol:='m'}
+    : ${omg_has_cached_modifications_symbol:='M'}
+    : ${omg_ready_to_commit_symbol:='✔'}
+    : ${omg_is_on_a_tag_symbol:='tags:'}
+    : ${omg_needs_to_merge_symbol:='^'}
+    : ${omg_detached_symbol:=':O'}
+    : ${omg_can_fast_forward_symbol:='ff'}
+    : ${omg_has_diverged_symbol:='Y'}
+    : ${omg_not_tracked_branch_symbol:='�'}
+    : ${omg_rebase_tracking_branch_symbol:='↯'}
+    : ${omg_merge_tracking_branch_symbol:='↯'}
+    : ${omg_should_push_symbol:='☝'}
+    : ${omg_has_stashes_symbol:='☢'}
 
     : ${omg_default_color_on:='\[\033[1;37m\]'}
     : ${omg_default_color_off:='\[\033[0m\]'}
@@ -37,9 +37,11 @@ if [ -n "${BASH_VERSION}" ]; then
         local flag=$1
         local symbol=$2
         local color=${3:-$omg_default_color_on}
-        if [[ $flag == false ]]; then symbol=' '; fi
-
-        echo -n "${color}${symbol}  "
+        if [[ $flag == false ]]; then 
+          echo -n "${color}" 
+        else
+          echo -n "${color}${symbol} "          
+        fi        
     }
 
     function custom_build_prompt {
@@ -108,7 +110,7 @@ if [ -n "${BASH_VERSION}" ]; then
         if [[ $is_a_git_repo == true ]]; then
             # on filesystem
             prompt="${black_on_white} "
-            prompt+=$(enrich_append $is_a_git_repo $omg_is_a_git_repo_symbol "${black_on_white}")
+            #prompt+=$(enrich_append $is_a_git_repo $omg_is_a_git_repo_symbol "${black_on_white}")
             prompt+=$(enrich_append $has_stashes $omg_has_stashes_symbol "${yellow_on_white}")
 
             prompt+=$(enrich_append $has_untracked_files $omg_has_untracked_files_symbol "${red_on_white}")
@@ -123,17 +125,17 @@ if [ -n "${BASH_VERSION}" ]; then
             
             # next operation
 
-            prompt+=$(enrich_append $ready_to_commit $omg_ready_to_commit_symbol "${red_on_white}")
+            prompt+=$(enrich_append $ready_to_commit $omg_ready_to_commit_symbol "${green}${background_white}")
 
             # where
 
-            prompt="${prompt} ${white_on_red} ${black_on_red}"
+            prompt="${prompt} ${white_on_red} ${black_on_red}"
             if [[ $detached == true ]]; then
                 prompt+=$(enrich_append $detached $omg_detached_symbol "${white_on_red}")
                 prompt+=$(enrich_append $detached "(${current_commit_hash:0:7})" "${black_on_red}")
             else            
                 if [[ $has_upstream == false ]]; then
-                    prompt+=$(enrich_append true "-- ${omg_not_tracked_branch_symbol}  --  (${current_branch})" "${black_on_red}")
+                    prompt+=$(enrich_append true " ${omg_not_tracked_branch_symbol} (${current_branch})" "${black_on_red}")
                 else
                     if [[ $will_rebase == true ]]; then
                         local type_of_upstream=$omg_rebase_tracking_branch_symbol
@@ -151,7 +153,7 @@ if [ -n "${BASH_VERSION}" ]; then
                             prompt+=$(enrich_append true "-- ${white_on_red}${omg_should_push_symbol}${black_on_red}  +${commits_ahead}" "${black_on_red}")
                         fi
                         if [[ $commits_ahead == 0 && $commits_behind == 0 ]]; then
-                            prompt+=$(enrich_append true " --   -- " "${black_on_red}")
+                            prompt+=$(enrich_append true " up to date" "${black_on_red}")
                         fi
                         
                     fi
@@ -159,7 +161,7 @@ if [ -n "${BASH_VERSION}" ]; then
                 fi
             fi
             prompt+=$(enrich_append ${is_on_a_tag} "${omg_is_on_a_tag_symbol} ${tag_at_current_commit}" "${black_on_red}")
-            prompt+="${omg_last_symbol_color}${reset}\n"
+            prompt+="${omg_last_symbol_color}${reset}\n"
             prompt+="$(eval_prompt_callback_if_present)"
             prompt+="${omg_second_line}"
         else
