@@ -134,6 +134,7 @@ if [ -n "${BASH_VERSION}" ]; then
             # next operation
 
             prompt+=$(enrich_append $ready_to_commit $omg_ready_to_commit_symbol "${green}${background_white}")
+            prompt+=$(enrich_append $should_push $omg_should_push_symbol "${green}${background_white}")
 
             # where
 
@@ -158,7 +159,7 @@ if [ -n "${BASH_VERSION}" ]; then
                         prompt+=$(enrich_append true "+${commits_ahead} ahead" "${white_on_red}")
                     fi
                     if [[ $commits_ahead == 0 && $commits_behind == 0 ]]; then
-                        prompt+=$(enrich_append true " up to date" "${black_on_red}")
+                        prompt+=$(enrich_append true "up to date" "${black_on_red}")
                     fi
 
                     prompt+=$(enrich_append true "(${current_branch} ${type_of_upstream} ${upstream//\/$current_branch/})" "${black_on_red}")
