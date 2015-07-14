@@ -162,7 +162,7 @@ if [ -n "${BASH_VERSION}" ]; then
                         prompt+=$(enrich_append true "up to date" "${black_on_red}")
                     fi
 
-                    prompt+=$(enrich_append true "(${upstream//\/$current_branch/} <- ${current_branch})" "${black_on_red}")
+                    prompt+=$(enrich_append true "(${upstream//\/$current_branch/} << ${current_branch})" "${black_on_red}")
                 fi
             fi
             prompt+=$(enrich_append ${is_on_a_tag} "${omg_is_on_a_tag_symbol} ${tag_at_current_commit}" "${black_on_red}")
